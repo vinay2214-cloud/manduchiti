@@ -40,8 +40,10 @@ body {
 }
 
 :focus-visible {
+  /* Turmeric ring per the PRD, with an ink edge so the ring reaches 3:1 on paper and white. */
   outline: 3px solid var(--color-turmeric);
   outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-ink);
 }
 
 @keyframes fade-rise {

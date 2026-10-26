@@ -34,6 +34,10 @@ describe("every confirmed medicine lands in exactly the expected slots, dose as 
       "Tab Telmisartan": ["morning", "night"], "Tab Azithromycin": ["morning"], "Syp Cough syrup": "ask",
       "Tab Paracetamol": "as_needed", "Tab Vitamin D3": "ask", "Inj Insulin (see chart)": "ask",
     },
+    sample3_photo_style: {
+      "Tab Clopidogrel": ["morning"], "Tab Metoprolol": ["morning", "night"], "Tab Furosemide": ["morning"],
+      "Tab Rosuvastatin": ["night"], "Tab Ramipril": ["night"], "Tab Sorbitrate": "as_needed",
+    },
     sample4_coverage: {
       "Tab Metformin": ["morning", "afternoon", "night"], "Tab Calcium": ["morning", "night"],
       "Tab Levocetirizine": ["morning", "afternoon", "night"], "Cap Amoxicillin": ["morning", "afternoon", "evening", "night"],

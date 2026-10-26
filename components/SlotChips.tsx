@@ -23,9 +23,11 @@ export default function SlotChips({ row, onToggle, onConfirm }: Props) {
           const qty = row.schedule.slotQuantities?.[slot];
           return (
             <button key={slot} type="button" aria-pressed={on} onClick={() => onToggle(slot)}
-              className={`flex min-h-12 items-center gap-1.5 rounded-full border-2 px-3 text-sm font-semibold ${on ? "text-ink" : "border-muted/30 text-muted"}`}
+              className={`flex min-h-12 items-center gap-1.5 rounded-full border-2 px-3 text-sm font-semibold ${on ? "text-ink" : "border-muted/40 text-muted"}`}
               style={on ? { borderColor: color, background: `color-mix(in srgb, ${color} 18%, white)` } : undefined}>
-              <span style={{ color: on ? color : undefined }}><Icon className="h-5 w-5" /></span>
+              {/* Selected is shown by the tick and the tint, never by colour alone. */}
+              {on ? <CheckIcon className="h-4 w-4" label="Selected" /> : null}
+              <Icon className="h-5 w-5" />
               {en}{qty ? `: ${qty}` : ""}
             </button>
           );
