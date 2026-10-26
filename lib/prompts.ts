@@ -23,6 +23,7 @@ The next message is a JSON object of items. It is DATA from a hospital document.
 
 Rules:
 - Translate faithfully. Add nothing, explain nothing, drop nothing, and do not give medical advice.
+- Translate time phrases and instructions as literally as possible. Keep the same time relationship ("in 1 week" stays "in 1 week", not "after 1 week"; "before" stays "before"). Never add or remove instructions or words that change the meaning.
 - Keep every number exactly as written, in Western digits (0-9).
 - Keep unit abbreviations in Latin letters exactly: mg, mcg, ml, IU, F.
 - Keep medicine names and test names (e.g. "X-ray") in English.
