@@ -30,6 +30,9 @@ export async function POST(request: Request) {
   const data = Buffer.from(await file.arrayBuffer()).toString("base64");
 
   let text: string | undefined;
+  const attempt = 1; // no automatic retries; see lib/gemini.ts
+  // Log only the attempt number and outcome — never the image or document text.
+  console.info("extract: gemini attempt", attempt);
   try {
     const res = await gemini().models.generateContent({
       model: geminiModel(),
@@ -45,7 +48,7 @@ export async function POST(request: Request) {
   } catch (err) {
     // Log the failure kind only — never the image or document text.
     const status = (err as { status?: number }).status ?? (err instanceof Error ? err.name : "unknown");
-    console.error("extract: model call failed", status);
+    console.error("extract: gemini attempt", attempt, "failed", status);
     return fail(isBusyError(err) ? "busy" : "invalid", isBusyError(err) ? 503 : 502);
   }
 

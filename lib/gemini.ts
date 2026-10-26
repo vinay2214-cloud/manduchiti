@@ -6,7 +6,9 @@ let client: GoogleGenAI | null = null;
 export function gemini(): GoogleGenAI {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY is not set");
-  client ??= new GoogleGenAI({ apiKey });
+  // attempts: 1 turns off the SDK's automatic retries, so one request is one Gemini call.
+  // Any retry is explicit in our own code.
+  client ??= new GoogleGenAI({ apiKey, httpOptions: { retryOptions: { attempts: 1 } } });
   return client;
 }
 
