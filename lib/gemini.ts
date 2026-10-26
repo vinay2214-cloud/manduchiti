@@ -15,3 +15,6 @@ export function gemini(): GoogleGenAI {
 export const geminiModel = () => process.env.GEMINI_MODEL || "gemini-3.5-flash";
 
 export { isBusyError, errorStatus } from "./gemini-errors";
+
+// Translation can use its own model; it defaults to the extraction model.
+export const translateModel = () => process.env.GEMINI_TRANSLATE_MODEL || geminiModel();

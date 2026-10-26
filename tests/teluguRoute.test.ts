@@ -5,17 +5,25 @@ const generateContent = vi.fn();
 // A plain function in front of the spy: a scripted failure is thrown here, after the spy has
 // recorded the call, so the spy itself never holds a rejected promise.
 let failWith: Error | null = null;
+let failures: (Error | (() => void))[] = []; // one entry per call: an error to throw, or a step to run (may throw)
 vi.mock("@/lib/gemini", async () => {
   const real = await vi.importActual<Record<string, unknown>>("@/lib/gemini-errors");
   const models = {
     generateContent: async (...args: unknown[]) => {
       const out = generateContent(...args);
+      const step = failures.shift();
+      if (typeof step === "function") step();
+      else if (step) throw step;
       if (failWith) throw failWith;
       return out;
     },
   };
-  return { gemini: () => ({ models }), geminiModel: () => "test-model", ...real };
+  return { gemini: () => ({ models }), geminiModel: () => "test-model", translateModel: () => "test-translate-model", ...real };
 });
+// Sleep is recorded instead of waited; the clock is scripted so "budget remaining" can be tested.
+const sleep = vi.fn(async (_ms: number) => {});
+let clock = 0;
+vi.mock("@/lib/sleep", () => ({ sleep: (ms: number) => sleep(ms), now: () => clock }));
 
 const { POST } = await import("@/app/api/telugu/route");
 
@@ -38,6 +46,9 @@ const apiError = (status: number) => Object.assign(new Error(`{"error":{"code":$
 beforeEach(() => {
   generateContent.mockReset();
   failWith = null;
+  failures = [];
+  sleep.mockClear();
+  clock = 0;
 });
 
 describe("/api/telugu", () => {
@@ -66,12 +77,62 @@ describe("/api/telugu", () => {
     expect((await call({ items })).status).toBe(200);
     expect(generateContent).toHaveBeenCalledTimes(2);
   });
-  it.each([503, 429])("a %s is busy straight away, with no retry", async (status) => {
-    failWith = apiError(status);
+  it("a 429 (quota) is busy straight away, with no retry", async () => {
+    failWith = apiError(429);
     const res = await call({ items });
     expect(res.status).toBe(503);
     expect(await res.json()).toEqual({ error: "busy" });
     expect(generateContent).toHaveBeenCalledTimes(1);
+    expect(sleep).not.toHaveBeenCalled();
+  });
+  it("a 503 is retried once after 2s, then succeeds", async () => {
+    generateContent.mockReturnValue(reply(goodReply));
+    failures = [apiError(503)];
+    const res = await call({ items });
+    expect(res.status).toBe(200);
+    expect(generateContent).toHaveBeenCalledTimes(2);
+    expect(sleep).toHaveBeenCalledWith(2000);
+  });
+  it("503 twice → busy after exactly 2 calls", async () => {
+    failWith = apiError(503);
+    const res = await call({ items });
+    expect(await res.json()).toEqual({ error: "busy" });
+    expect(generateContent).toHaveBeenCalledTimes(2);
+  });
+  it("no 503 retry when too little of the 40s budget is left", async () => {
+    // The first call takes 35s of the 40s budget, then fails with 503.
+    failures = [
+      () => {
+        clock = 35_000;
+        throw apiError(503);
+      },
+    ];
+    const res = await call({ items });
+    expect(await res.json()).toEqual({ error: "busy" });
+    expect(generateContent).toHaveBeenCalledTimes(1);
+    expect(sleep).not.toHaveBeenCalled();
+  });
+  it("a timeout is not retried", async () => {
+    failWith = Object.assign(new Error("This operation was aborted"), { name: "AbortError" });
+    const res = await call({ items });
+    expect(await res.json()).toEqual({ error: "busy" });
+    expect(generateContent).toHaveBeenCalledTimes(1);
+  });
+  it("asks for minimal thinking, keeps the structured output, and uses the translate model", async () => {
+    generateContent.mockResolvedValueOnce(reply(goodReply));
+    await call({ items });
+    const req = generateContent.mock.calls[0][0];
+    expect(req.model).toBe("test-translate-model");
+    expect(req.config.thinkingConfig).toEqual({ thinkingLevel: "MINIMAL" });
+    expect(req.config.responseMimeType).toBe("application/json");
+    expect(req.config.responseJsonSchema).toBeDefined();
+  });
+  it("one 40s budget covers every attempt", async () => {
+    generateContent.mockReturnValue(reply(goodReply));
+    failures = [apiError(503)];
+    await call({ items });
+    const [a, b] = generateContent.mock.calls.map((c) => c[0].config.abortSignal as AbortSignal);
+    expect(a).toBe(b);
   });
   it("sends nothing to Gemini when there's no free text", async () => {
     const res = await call({ items: [] });
@@ -81,6 +142,13 @@ describe("/api/telugu", () => {
   it("rejects a malformed request without calling Gemini", async () => {
     expect((await call({ items: [{ id: 1 }] })).status).toBe(400);
     expect(generateContent).not.toHaveBeenCalled();
+  });
+  it("sends Gemini only the request's items — no names, doses or other fields", async () => {
+    generateContent.mockResolvedValueOnce(reply(goodReply));
+    await call({ items, extra: "Tab Metformin 500 mg" });
+    const parts = generateContent.mock.calls[0][0].contents[0].parts;
+    expect(parts).toHaveLength(2);
+    expect(JSON.stringify(parts)).not.toContain("Metformin");
   });
   it("sends the document text as data, not mixed into the instructions", async () => {
     generateContent.mockResolvedValueOnce(reply(goodReply));
