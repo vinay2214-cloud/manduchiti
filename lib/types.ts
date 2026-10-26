@@ -64,3 +64,40 @@ export type FoodDisplay =
   | { kind: "chip"; chip: "before" | "after" | "with" }
   | { kind: "text"; text: string }
   | { kind: "none" };
+
+// Free text from the document, sent to /api/telugu and checked by the translation guard.
+export type TranslateItem = { id: string; text: string };
+export type TranslatedItem = { id: string; te: string };
+export type Translations = Record<string, string>;
+
+export type SlotMarker = "suggested_confirmed" | "moved" | null;
+export type FieldChange = { field: "name" | "dose" | "frequency" | "instructions" | "times"; original: string | null };
+
+export type PlanFood =
+  | { kind: "chip"; chip: "before" | "after" | "with" }
+  | { kind: "text"; en: string; te: string }
+  | { kind: "none" };
+
+export type PlanRow = {
+  id: string;
+  name: string; // English as written (or as edited)
+  dose: string | null; // null → "Not written on the sheet…"
+  quantity?: string; // "2" for a 2-0-1 pattern, shown on that slot only
+  food: PlanFood;
+  frequencyAsWritten: string | null;
+  durationAsWritten: string | null;
+  writtenTime?: string;
+  slotMarker: SlotMarker;
+  fieldChanges: FieldChange[];
+  reason?: string; // Ask rows only
+};
+
+export type Plan = {
+  slots: { slot: Slot; rows: PlanRow[] }[]; // non-empty slots only, in day order
+  asNeeded: PlanRow[];
+  ask: PlanRow[];
+  warnings: { kind: "fixed" } | { kind: "items"; items: { en: string; te: string }[] };
+  followUp: { kind: "fixed" } | { kind: "text"; en: string; te: string };
+  showSuggestedLegend: boolean;
+  showMovedLegend: boolean;
+};

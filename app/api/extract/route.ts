@@ -1,4 +1,4 @@
-import { gemini, geminiModel, isBusyError } from "@/lib/gemini";
+import { errorStatus, gemini, geminiModel, isBusyError } from "@/lib/gemini";
 import { EXTRACT_PROMPT } from "@/lib/prompts";
 import { ModelExtractionSchema, extractionJsonSchema } from "@/lib/schemas";
 import { groundDoses } from "@/lib/groundDose";
@@ -47,8 +47,7 @@ export async function POST(request: Request) {
     text = res.text;
   } catch (err) {
     // Log the failure kind only — never the image or document text.
-    const status = (err as { status?: number }).status ?? (err instanceof Error ? err.name : "unknown");
-    console.error("extract: gemini attempt", attempt, "failed", status);
+    console.error("extract: gemini attempt", attempt, "failed", errorStatus(err));
     return fail(isBusyError(err) ? "busy" : "invalid", isBusyError(err) ? 503 : 502);
   }
 

@@ -25,3 +25,14 @@ export type ModelExtraction = z.infer<typeof ModelExtractionSchema>;
 // Gemini doesn't accept the "$schema" keyword, so it is dropped.
 const { $schema: _drop, ...extractionJson } = z.toJSONSchema(ModelExtractionSchema, { target: "draft-7" });
 export const extractionJsonSchema = extractionJson;
+
+export const TeluguRequestSchema = z.object({
+  items: z.array(z.object({ id: z.string().min(1).max(40), text: z.string().min(1).max(600) })).max(60),
+});
+
+export const TeluguReplySchema = z.object({
+  items: z.array(z.object({ id: z.string(), te: z.string() })),
+});
+
+const { $schema: _dropT, ...teluguJson } = z.toJSONSchema(TeluguReplySchema, { target: "draft-7" });
+export const teluguJsonSchema = teluguJson;

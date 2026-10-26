@@ -151,7 +151,7 @@ describe("duration is stripped and kept as written", () => {
 
 // prd.md > Amendments From 5-build: instructions never stand in for a missing or unclear frequency.
 describe("amendment: a named time in the instructions needs a recognised frequency", () => {
-  it.each([
+  it.each<[string | null, string | null, string]>([
     [null, "Night", "blank frequency"],
     ["", "Morning", "empty frequency"],
     ["blorp", "Morning", "unreadable frequency"],
