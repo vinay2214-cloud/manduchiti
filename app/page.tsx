@@ -4,15 +4,17 @@ import { useState } from "react";
 import UploadScreen from "@/components/UploadScreen";
 import ReadingScreen from "@/components/ReadingScreen";
 import { resizeImage } from "@/lib/resizeImage";
+import ConfirmScreen from "@/components/ConfirmScreen";
+import { buildConfirmState } from "@/lib/confirm";
 import { en } from "@/lib/strings";
-import type { ErrorCode, Extraction } from "@/lib/types";
+import type { ConfirmState, ErrorCode, Extraction } from "@/lib/types";
 
-type Step = "upload" | "reading" | "confirm" | "error";
+type Step = "upload" | "reading" | "confirm" | "plan" | "error";
 
 export default function Home() {
   const [step, setStep] = useState<Step>("upload");
   const [readingDone, setReadingDone] = useState(0);
-  const [extraction, setExtraction] = useState<Extraction | null>(null);
+  const [confirm, setConfirm] = useState<ConfirmState | null>(null);
   const [error, setError] = useState<ErrorCode | null>(null);
 
   async function handleImage(blob: Blob) {
@@ -28,7 +30,7 @@ export default function Home() {
       const json = await res.json();
       if (!res.ok) throw Object.assign(new Error("extract"), { code: json.error as ErrorCode });
       setReadingDone(2);
-      setExtraction(json as Extraction);
+      setConfirm(buildConfirmState(json as Extraction));
       setStep("confirm");
     } catch (e) {
       const code = (e as { code?: ErrorCode }).code ?? ((e as Error).name === "TimeoutError" ? "busy" : "invalid");
@@ -37,7 +39,7 @@ export default function Home() {
     }
   }
 
-  const reset = () => { setStep("upload"); setExtraction(null); setError(null); };
+  const reset = () => { setStep("upload"); setConfirm(null); setError(null); };
 
   return (
     <div className="mx-auto max-w-[480px]">
@@ -49,13 +51,14 @@ export default function Home() {
           <button type="button" onClick={reset} className="mt-6 min-h-12 rounded-full bg-turmeric px-6 font-semibold text-ink">{en.startOver}</button>
         </main>
       )}
-      {step === "confirm" && extraction && (
-        // Temporary raw view for slice 1; replaced by the Check with paper screen in slice 2.
-        <main className="px-4 pt-6 pb-10">
-          <button type="button" onClick={reset} className="min-h-12 font-semibold underline">{en.startOver}</button>
-          <pre className="mt-4 overflow-x-auto rounded-[var(--radius-input)] bg-card p-3 text-xs whitespace-pre-wrap">
-            {JSON.stringify(extraction, null, 2)}
-          </pre>
+      {step === "confirm" && confirm && (
+        <ConfirmScreen state={confirm} onChange={setConfirm} onMakePlan={() => setStep("plan")} onStartOver={reset} />
+      )}
+      {step === "plan" && (
+        // Temporary until slice 3 builds the Telugu plan.
+        <main className="px-4 pt-10">
+          <p className="text-lg font-semibold">The Telugu plan arrives in the next step of the build.</p>
+          <button type="button" onClick={() => setStep("confirm")} className="mt-6 min-h-12 font-semibold underline">Back to checking</button>
         </main>
       )}
     </div>

@@ -1,0 +1,77 @@
+{
+    "document_ok": true,
+    "medicines": [
+        {
+            "id": "m1",
+            "name": "Tab Metformin",
+            "dose_as_written": "500 mg",
+            "frequency_as_written": "1-1-1",
+            "instructions_as_written": "After food",
+            "duration_as_written": null,
+            "source_text": "Tab Metformin 500 mg 1-1-1 After food",
+            "unsure": false
+        },
+        {
+            "id": "m2",
+            "name": "Tab Calcium",
+            "dose_as_written": "500 mg",
+            "frequency_as_written": "2-0-1",
+            "instructions_as_written": "After food",
+            "duration_as_written": null,
+            "source_text": "Tab Calcium 500 mg 2-0-1 After food",
+            "unsure": false
+        },
+        {
+            "id": "m3",
+            "name": "Tab Levocetirizine",
+            "dose_as_written": "5 mg",
+            "frequency_as_written": "TDS",
+            "instructions_as_written": "After food",
+            "duration_as_written": null,
+            "source_text": "Tab Levocetirizine 5 mg TDS After food",
+            "unsure": false
+        },
+        {
+            "id": "m4",
+            "name": "Cap Amoxicillin",
+            "dose_as_written": "500 mg",
+            "frequency_as_written": "QID",
+            "instructions_as_written": null,
+            "duration_as_written": null,
+            "source_text": "Cap Amoxicillin 500 mg QID",
+            "unsure": false
+        },
+        {
+            "id": "m5",
+            "name": "Tab Thyroxine",
+            "dose_as_written": "50 mcg",
+            "frequency_as_written": "OD",
+            "instructions_as_written": "Empty stomach, 30 min before breakf",
+            "duration_as_written": null,
+            "source_text": "Tab Thyroxine 50 mcg OD Empty stomach, 30 min before breakf",
+            "unsure": true
+        },
+        {
+            "id": "m6",
+            "name": "Tab Montelukast",
+            "dose_as_written": "10 mg",
+            "frequency_as_written": "At bedtime",
+            "instructions_as_written": null,
+            "duration_as_written": null,
+            "source_text": "Tab Montelukast 10 mg At bedtime",
+            "unsure": false
+        },
+        {
+            "id": "m7",
+            "name": "Tab Ecosprin",
+            "dose_as_written": "75 mg",
+            "frequency_as_written": "8 PM",
+            "instructions_as_written": "With food",
+            "duration_as_written": null,
+            "source_text": "Tab Ecosprin 75 mg 8 PM With food",
+            "unsure": false
+        }
+    ],
+    "warning_signs": [],
+    "follow_up": null
+}

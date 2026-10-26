@@ -1,0 +1,72 @@
+{
+    "document_ok": true,
+    "medicines": [
+        {
+            "id": "m1",
+            "name": "Tab Clopidogrel",
+            "dose_as_written": "75 mg",
+            "frequency_as_written": "OD",
+            "instructions_as_written": "After food",
+            "duration_as_written": null,
+            "source_text": "Tab Clopidogrel 75 mg OD After food",
+            "unsure": false
+        },
+        {
+            "id": "m2",
+            "name": "Tab Metoprolol",
+            "dose_as_written": "25 mg",
+            "frequency_as_written": "BD",
+            "instructions_as_written": "After food",
+            "duration_as_written": null,
+            "source_text": "Tab Metoprolol 25 mg BD After food",
+            "unsure": false
+        },
+        {
+            "id": "m3",
+            "name": "Tab Furosemide",
+            "dose_as_written": "20 mg",
+            "frequency_as_written": "OD",
+            "instructions_as_written": "Morning",
+            "duration_as_written": null,
+            "source_text": "Tab Furosemide 20 mg OD Morning",
+            "unsure": false
+        },
+        {
+            "id": "m4",
+            "name": "Tab Rosuvastatin",
+            "dose_as_written": "10 mg",
+            "frequency_as_written": "HS",
+            "instructions_as_written": "Night",
+            "duration_as_written": null,
+            "source_text": "Tab Rosuvastatin 10 mg HS Night",
+            "unsure": false
+        },
+        {
+            "id": "m5",
+            "name": "Tab Ramipril",
+            "dose_as_written": "2.5 mg",
+            "frequency_as_written": "OD",
+            "instructions_as_written": "Night",
+            "duration_as_written": null,
+            "source_text": "Tab Ramipril 2.5 mg OD Night",
+            "unsure": false
+        },
+        {
+            "id": "m6",
+            "name": "Tab Sorbitrate",
+            "dose_as_written": "5 mg",
+            "frequency_as_written": "SOS",
+            "instructions_as_written": "Chest pain, under tongue",
+            "duration_as_written": null,
+            "source_text": "Tab Sorbitrate 5 mg SOS Chest pain, under tongue",
+            "unsure": false
+        }
+    ],
+    "warning_signs": [
+        "Chest pain not relieved in 10 minutes",
+        "Sudden swelling of legs",
+        "Breathlessness at rest",
+        "Black stools or bleeding"
+    ],
+    "follow_up": "Cardiology OPD after 10 days."
+}

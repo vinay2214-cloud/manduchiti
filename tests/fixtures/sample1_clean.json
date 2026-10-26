@@ -1,0 +1,62 @@
+{
+    "document_ok": true,
+    "medicines": [
+        {
+            "id": "m1",
+            "name": "Tab Metformin",
+            "dose_as_written": "500 mg",
+            "frequency_as_written": "BD",
+            "instructions_as_written": "After food",
+            "duration_as_written": null,
+            "source_text": "Tab Metformin 500 mg BD After food",
+            "unsure": false
+        },
+        {
+            "id": "m2",
+            "name": "Tab Amlodipine",
+            "dose_as_written": "5 mg",
+            "frequency_as_written": "OD",
+            "instructions_as_written": "Morning",
+            "duration_as_written": null,
+            "source_text": "Tab Amlodipine 5 mg OD Morning",
+            "unsure": false
+        },
+        {
+            "id": "m3",
+            "name": "Tab Atorvastatin",
+            "dose_as_written": "10 mg",
+            "frequency_as_written": "HS",
+            "instructions_as_written": "Night",
+            "duration_as_written": null,
+            "source_text": "Tab Atorvastatin 10 mg HS Night",
+            "unsure": false
+        },
+        {
+            "id": "m4",
+            "name": "Tab Aspirin",
+            "dose_as_written": "75 mg",
+            "frequency_as_written": "OD",
+            "instructions_as_written": "After food",
+            "duration_as_written": null,
+            "source_text": "Tab Aspirin 75 mg OD After food",
+            "unsure": false
+        },
+        {
+            "id": "m5",
+            "name": "Tab Pantoprazole",
+            "dose_as_written": "40 mg",
+            "frequency_as_written": "OD",
+            "instructions_as_written": "Before breakfast",
+            "duration_as_written": null,
+            "source_text": "Tab Pantoprazole 40 mg OD Before breakfast",
+            "unsure": false
+        }
+    ],
+    "warning_signs": [
+        "Chest pain or pressure",
+        "Severe breathlessness",
+        "Fainting or confusion",
+        "Very low sugar: sweating, shaking, drowsiness"
+    ],
+    "follow_up": "Medicine OPD after 2 weeks. Check blood sugar before breakfast daily."
+}

@@ -1,0 +1,72 @@
+{
+    "document_ok": true,
+    "medicines": [
+        {
+            "id": "m1",
+            "name": "Tab Telmisartan",
+            "dose_as_written": "40 mg",
+            "frequency_as_written": "1-0-1",
+            "instructions_as_written": "After food",
+            "duration_as_written": null,
+            "source_text": "Tab Telmisartan 40 mg 1-0-1 After food",
+            "unsure": false
+        },
+        {
+            "id": "m2",
+            "name": "Tab Azithromycin",
+            "dose_as_written": "500 mg",
+            "frequency_as_written": "OD",
+            "instructions_as_written": "After food",
+            "duration_as_written": "x 3 days",
+            "source_text": "Tab Azithromycin 500 mg OD x 3 days After food",
+            "unsure": false
+        },
+        {
+            "id": "m3",
+            "name": "Syp Cough syrup",
+            "dose_as_written": "10 ml",
+            "frequency_as_written": "As directed",
+            "instructions_as_written": null,
+            "duration_as_written": null,
+            "source_text": "Syp Cough syrup 10 ml As directed",
+            "unsure": false
+        },
+        {
+            "id": "m4",
+            "name": "Tab Paracetamol",
+            "dose_as_written": "650 mg",
+            "frequency_as_written": "SOS",
+            "instructions_as_written": "If fever",
+            "duration_as_written": null,
+            "source_text": "Tab Paracetamol 650 mg SOS If fever",
+            "unsure": false
+        },
+        {
+            "id": "m5",
+            "name": "Tab Vitamin D3",
+            "dose_as_written": "60000 IU",
+            "frequency_as_written": "Weekly",
+            "instructions_as_written": "Sunday",
+            "duration_as_written": null,
+            "source_text": "Tab Vitamin D3 60000 IU Weekly Sunday",
+            "unsure": false
+        },
+        {
+            "id": "m6",
+            "name": "Inj Insulin (see chart)",
+            "dose_as_written": null,
+            "frequency_as_written": null,
+            "instructions_as_written": null,
+            "duration_as_written": null,
+            "source_text": "Inj Insulin (see chart)",
+            "unsure": false
+        }
+    ],
+    "warning_signs": [
+        "Fever above 101 F for more than 2 days",
+        "Breathing difficulty",
+        "Coughing blood",
+        "Blue lips"
+    ],
+    "follow_up": "Review in 1 week with chest X-ray."
+}
