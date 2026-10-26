@@ -245,7 +245,7 @@ PRD ref: `prd.md > Telugu Plan`, `prd.md > Screens and Layout`.
 PRD ref: `prd.md > States and Boundaries`.
 
 ### Share Bar (stretch)
-`components/ShareBar.tsx`. html-to-image renders a hidden 1080×1350 plan card, with the footer, to a PNG download. A `https://wa.me/?text=` link carries a short message. Print uses `window.print()` with `@media print` (black on white, one page, no buttons).
+`components/ShareBar.tsx`. html-to-image renders a hidden 1080×1350 plan card, with the footer, to a PNG download. A `https://wa.me/?text=` link carries a short message. Print uses `window.print()` with `@media print` (black on white, no buttons, two columns; *amended in 5-build:* dense sheets may take two pages rather than shrinking the type, and Save as image was dropped).
 PRD ref: `prd.md > Share (stretch, not part of "done")`.
 
 ## Data Model
