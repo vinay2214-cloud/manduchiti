@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #FBF6EE;
+  --color-card: #FFFFFF;
+  --color-ink: #12433E;
+  --color-muted: #5B6B68;
+  --color-turmeric: #E0A100;
+  --color-morning: #F2B84B;
+  --color-afternoon: #5BA4CF;
+  --color-evening: #C8643C;
+  --color-night: #3D4A8F;
+  --color-warn-bg: #FBE9E4;
+  --color-warn: #9B2C1D;
+  --color-amber-bg: #FDF1D6;
+  --radius-card: 16px;
+  --radius-input: 12px;
+  --shadow-soft: 0 4px 16px rgba(18, 67, 62, 0.08);
+  --font-telugu: var(--font-noto-telugu), system-ui, sans-serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+:root {
+  --scale: 1;
+}
+
+html {
+  font-size: calc(16px * var(--scale));
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+:lang(te) {
+  font-family: var(--font-telugu);
+  line-height: 1.6;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-turmeric);
+  outline-offset: 2px;
+}
+
+@keyframes fade-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.rise {
+  animation: fade-rise 320ms ease-out both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #efe8dc 25%, #f7f1e7 50%, #efe8dc 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise, .skeleton { animation: none; }
+}
