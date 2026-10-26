@@ -148,3 +148,34 @@ describe("duration is stripped and kept as written", () => {
     expect(s("1-0-1 for 5 days")).toMatchObject({ status: "direct", durationAsWritten: "for 5 days" });
   });
 });
+
+// prd.md > Amendments From 5-build: instructions never stand in for a missing or unclear frequency.
+describe("amendment: a named time in the instructions needs a recognised frequency", () => {
+  it.each([
+    [null, "Night", "blank frequency"],
+    ["", "Morning", "empty frequency"],
+    ["blorp", "Morning", "unreadable frequency"],
+    ["As directed", "Morning", "as directed"],
+    ["Weekly", "Night", "weekly"],
+    ["As directed in the morning", null, "as directed with a time inside the frequency"],
+  ])("%s + %s (%s) → ask, no slots", (f, i) => {
+    expect(s(f, i)).toMatchObject({ status: "ask", slots: [] });
+  });
+  it.each([
+    ["HS", "Morning"],
+    ["At bedtime", "Morning"],
+    ["8 PM", "Morning"],
+  ])("time-frequency %s disagreeing with %s → ask", (f, i) => {
+    expect(s(f, i)).toMatchObject({ status: "ask", slots: [], reason: "Times on the sheet don't match" });
+  });
+  it.each([
+    ["HS", "Night", ["night"]],
+    ["At bedtime", "Night", ["night"]],
+    ["8 PM", "Night", ["night"]],
+  ])("time-frequency %s agreeing with %s → direct", (f, i, slots) => {
+    expect(s(f, i)).toMatchObject({ status: "direct", slots });
+  });
+  it("a count plus a matching named time is still direct (paper wins)", () => {
+    expect(s("OD", "Night")).toMatchObject({ status: "direct", slots: ["night"] });
+  });
+});

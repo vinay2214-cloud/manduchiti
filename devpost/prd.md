@@ -192,11 +192,20 @@ Frequencies are sorted into four kinds:
 
 ## Amendments From 4-spec
 These are learner decisions made during `4-spec` after looking at the sample sheets. They refine **Slot Mapping** and **Food Instructions**.
-- **Paper timing wins:** a named time or meal word (Morning, Night, bedtime, a clock time, breakfast, lunch, dinner) in the frequency **or the Instructions column** makes the slot direct, with no confirm tap. The frequency count stays visible. Examples: OD + "Night" → night. OD + "Morning" → morning.
+- **Paper timing wins:** a named time or meal word (Morning, Night, bedtime, a clock time, breakfast, lunch, dinner) in the frequency **or the Instructions column** makes the slot direct, with no confirm tap. *(Narrowed by Amendments From 5-build: a named time in the Instructions column counts only alongside a recognised frequency.)* The frequency count stays visible. Examples: OD + "Night" → night. OD + "Morning" → morning.
 - **Two roles for words:** food-relation words alone (before food, after food, with food, empty stomach) never decide a slot. Meal words and named times do. "Before breakfast" → morning slot, and the food text is shown as written.
 - **Disagreement:** if the count and the named times disagree (BD + "Morning", OD + "morning and night"), the medicine goes to "Ask your doctor or pharmacist", with both texts shown as written.
 - **Partial words:** a partly readable time or meal word ("before breakf") is never completed. It counts as unrecognised, so the slot is suggested and the row is unsure.
 - **Digit patterns:** 3 positions = morning-afternoon-night, 4 positions = morning-afternoon-evening-night, 0 = no slot, any other length or an unparseable digit → Ask. A non-1 digit is shown as written on that slot's row ("Morning: 2"), never multiplied with the dose, and the pattern stays visible. These count as direct.
 - **Duration:** stripped before classifying ("OD x 3 days" is OD), and shown exactly as written on the confirm screen and the plan. Never turned into dates or counts.
 - **Privacy line:** if the Gemini free-tier terms allow using submitted content, "Your photo is not saved." becomes "Mandu Chit doesn't store your photo. This demo is for sample sheets only, please don't upload real patient papers."
-- **Frequency edits:** an "Ask your doctor or pharmacist" row stays in Ask even if the caregiver edits its frequency. Ask rows show the hint "If this was misread, retake the photo." For other rows, a frequency edit re-schedules the row and marks it "Changed by your family" / "Sheet said: <original>". Name, dose and food edits stay allowed everywhere, with markers.
+- **Frequency edits:** an "Ask your doctor or pharmacist" row stays in Ask even if the caregiver edits its frequency. Ask rows show the hint "If this was misread, retake the photo." For other rows, a frequency edit re-schedules the row and marks it "Changed by your family" / "Sheet said: <original>". *(Extended by Amendments From 5-build to instruction edits.)* Name, dose and food edits stay allowed everywhere, with markers.
+
+## Amendments From 5-build
+Learner decisions made at the slice 2 checkpoint of `5-build`, after seeing the scheduler's behaviour. They narrow **Slot Mapping** and the Amendments From 4-spec. Each case is a unit test in `tests/scheduler.test.ts` or `tests/confirm.test.ts`.
+- **Named time in the instructions needs a recognised frequency.** "Paper timing wins" applies only when the frequency is a count (OD, BD, TDS, QID), a digit pattern, or itself a named time. The instructions never stand in for a frequency the sheet didn't clearly give:
+  - Blank or unreadable frequency + a named time in the instructions (blank + "Night", "blorp" + "Morning") → "Ask your doctor or pharmacist", no slot.
+  - Unclear frequency + a named time ("As directed" + "Morning", "Weekly" + "Night", "As directed in the morning") → Ask, no slot.
+  - A frequency that is itself a time ("HS", "At bedtime", "8 PM") + an instruction naming a **different** time ("HS" + "Morning") → Ask, with "Times on the sheet don't match". The same time ("HS" + "Night") → direct.
+  - Count or digit pattern + named time is unchanged: matching → direct, disagreeing → Ask.
+- **Instruction edits re-schedule too.** On the Check with paper screen, editing a row's instructions re-runs Slot Mapping just like a frequency edit, so timing written in the instructions can't leave a stale slot. Rows whose sheet-derived status is Ask still stay in Ask after any edit.

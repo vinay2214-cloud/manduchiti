@@ -157,7 +157,7 @@ PRD ref: `prd.md > The Safety Rule`.
 6. **Combine the results:**
    - **Digit pattern and named slots both present:** if the slot sets are equal, `direct`. Otherwise `ask` with both texts.
    - **Count and named slots both present:** if the count equals the number of named slots, `direct` (the paper's timing wins). Otherwise `ask` with both texts.
-   - **Named slots only:** `direct`.
+   - **Named slots only:** `direct` — *amended in 5-build:* only when the frequency itself is nothing but named times (HS, At bedtime, 8 PM) and any named time in the instructions agrees with it; otherwise `ask`. A blank or unrecognised frequency is always `ask`, whatever the instructions say. See `prd.md > Amendments From 5-build`.
    - **Count only:** `suggested`, using the PRD defaults: OD → M, BD → M+N, TDS → M+A+N, QID → M+A+E+N.
    - **Anything else** (as directed, weekly, blank, unrecognised): `ask`, no slots.
 7. **Partial words:** a token that is a proper prefix (3 or more letters) of a time or meal word, such as "breakf" or "morn", is never completed. It sets `unsure: true` and does not count as a named slot, so OD + "before breakf" → `suggested` morning + unsure.
@@ -178,6 +178,7 @@ PRD ref: `prd.md > Food Instructions`.
 - One card per medicine with editable name, dose, frequency and instructions, the "from the paper: <source_text>" line, an amber "Check this against the paper" badge if `unsure`, and the duration as written.
 - **Slot chips:** shown on direct and suggested rows. Suggested rows show an amber "Suggested, please confirm" chip, and tapping it sets `confirmed: true` and shows a tick.
 - **Slot changes:** if a slot changes on any row, the scheduler's original slots are kept for comparison.
+- **Re-scheduling (5-build):** editing a row's frequency **or instructions** re-runs `schedule()` (`lib/confirm.ts > editField`) and resets `confirmed`, unless the row's `sheetStatus` is `ask`.
 - **"Ask your doctor or pharmacist" group:** no chips. Shows the frequency and instructions as written, plus the reason (for example "Count and times on the sheet don't match"), and the one-line hint "If this was misread, retake the photo." Editing a frequency never moves a row out of Ask.
 - The "I compared this with the paper" checkbox, and the primary button controlled by `canMakePlan()`.
 
@@ -191,7 +192,7 @@ PRD ref: `prd.md > Check With Paper (the safety gate)`, `prd.md > Slot Mapping`.
   - `fieldChanges`: `[{field, original}]` for every edited field
   - the frequency, duration and written time as written
   - the dose, or the "Not written on the sheet…" message when the dose is null
-- **Edited frequency (learner decision):**
+- **Edited frequency or instructions (learner decision; instructions added in 5-build):**
   - **Rows not in Ask:** the row is re-scheduled from the edited text, gets "Changed by your family" with "Sheet said: <original>", and its resulting slots count as `'moved'`. If the re-schedule returns `ask`, the row moves to Ask.
   - **Rows whose sheet-derived status is `ask`:** they **stay in Ask** after any frequency edit. Name, dose and food edits are still allowed there, with markers.
 
