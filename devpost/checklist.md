@@ -59,7 +59,7 @@ Build mode: fast
   Learner check: Open the live URL on your phone, watch the opening once, drag across it sideways, then turn on Reduce Motion and reload — it should be still.
   Commit: `Opening hero on the Upload screen`
 
-- [ ] **5. (Stretch) Save as image, WhatsApp, print** — limited by the learner to print + WhatsApp, Save as image only if reliable, hard cutoff 23:00; not deployed until the learner's phone test passes
+- [x] **5. (Stretch) Save as image, WhatsApp, print** — limited by the learner to print + WhatsApp, Save as image only if reliable, hard cutoff 23:00; not deployed until the learner's phone test passes
   Becomes usable: From the plan, download a 1080×1350 PNG with the footer, open a WhatsApp share link, or print a clean black-on-white page.
   Why now: Explicitly not part of "done" — last so it can be dropped if the deadline bites.
   PRD ref: `prd.md > Share (stretch, not part of "done")`
