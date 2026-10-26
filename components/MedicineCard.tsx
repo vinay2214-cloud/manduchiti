@@ -32,7 +32,7 @@ export default function MedicineCard({ row, index, onEdit, onToggle, onConfirm }
   const hasChips = status === "direct" || status === "suggested";
   const ask = status === "ask";
   return (
-    <article className="rise rounded-[var(--radius-card)] bg-card p-4 shadow-[var(--shadow-soft)]" style={{ "--i": index } as React.CSSProperties}>
+    <article id={`card-${row.id}`} className="rise scroll-mt-4 scroll-mb-40 rounded-[var(--radius-card)] bg-card p-4 shadow-[var(--shadow-soft)]" style={{ "--i": index } as React.CSSProperties}>
       {row.unsure && (
         <p className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-amber-bg px-3 py-1 text-sm font-semibold text-ink ring-1 ring-turmeric">
           <WarningIcon className="h-4 w-4" label="Unsure" /> Check this against the paper

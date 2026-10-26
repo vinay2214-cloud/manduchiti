@@ -61,7 +61,7 @@ Build mode: fast
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 2 (check-with-paper screen), before the plan screen is built
+- [x] Early usable behavior explored — after slice 2 (check-with-paper screen); learner checked from screenshots and asked for two fixes (named confirm tap, tappable pending line + short sticky bar), both done
 - [ ] Telugu wording and live URL reviewed — after slice 3 (`lib/strings.ts` is **draft, review pending (not reviewed)**: learner accepted the table with no changes for now; final review on the real screen before recording)
 - [ ] Final kick-the-tires exploration and feedback completed
 
@@ -98,3 +98,5 @@ Activity mode: [pending]
 - Third reading step renamed to "Getting the check screen ready" — it claimed the Telugu plan was being prepared before the Check screen.
 - Plan markers are short text labels (Telugu review rows 19–20) rather than a bare symbol — learner decision; the PRD only said "a small marker".
 - Error helpers moved to `lib/gemini-errors.ts` so route tests can mock the `server-only` Gemini client; Vitest 5 fails a test when a `vi.fn` returns a rejected promise, so route tests throw scripted failures from a plain wrapper instead.
+- Suggested-time confirm now reads "Tap to confirm: Morning, Night" → "Confirmed: …" as a full-width button, and changing a suggested row's chips after confirming resets the confirmation — learner feedback at the slice 2 checkpoint: the old chip didn't look tappable or say what it confirmed. Tests in `tests/confirmScreen.test.tsx`.
+- The "Confirm the suggested times on N medicines ↑" line is a button that scrolls to and focuses the first unconfirmed card; the sticky bar is 165px at 390×844 with every target kept at the PRD's 48px minimum (157px with 44px targets was possible but breaks the PRD). Checked headless at 390×844 against the sample 1 fixture: the jumped-to confirm button and the last card both sit above the bar.

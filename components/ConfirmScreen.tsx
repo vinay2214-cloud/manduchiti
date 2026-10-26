@@ -7,13 +7,23 @@ import MedicineCard from "./MedicineCard";
 
 type Props = { state: ConfirmState; onChange: (s: ConfirmState) => void; onMakePlan: () => void; onStartOver: () => void };
 
+// Bring the first unconfirmed card into view above the sticky bar and put focus on its confirm tap.
+function jumpTo(cardId: string) {
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  card.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+  card.querySelector<HTMLButtonElement>("[data-confirm]")?.focus({ preventScroll: true });
+}
+
 export default function ConfirmScreen({ state, onChange, onMakePlan, onStartOver }: Props) {
   const groups = [
     { key: "timed", title: null, hint: null, rows: state.rows.filter((r) => r.schedule.status === "direct" || r.schedule.status === "suggested") },
     { key: "as_needed", title: "Only if needed", hint: "Taken only when the sheet's reason applies.", rows: state.rows.filter((r) => r.schedule.status === "as_needed") },
     { key: "ask", title: "Ask your doctor or pharmacist", hint: "The sheet doesn't give a clear time for these, so they get no time on the plan.", rows: state.rows.filter((r) => r.schedule.status === "ask") },
   ];
-  const pending = state.rows.filter((r) => r.schedule.status === "suggested" && !r.confirmed).length;
+  const unconfirmed = state.rows.filter((r) => r.schedule.status === "suggested" && !r.confirmed);
+  const pending = unconfirmed.length;
   const ready = canMakePlan(state);
   let i = 0;
 
@@ -42,21 +52,23 @@ export default function ConfirmScreen({ state, onChange, onMakePlan, onStartOver
         ))}
       </main>
 
-      <div className="sticky bottom-0 space-y-3 border-t border-muted/15 bg-paper px-4 pt-3 pb-5">
+      {/* Kept short at 390px: one hint line, the checkbox, and the button. */}
+      <div className="sticky bottom-0 border-t border-muted/15 bg-paper px-4 pt-1 pb-3">
+        {pending > 0 ? (
+          <button type="button" data-jump={`card-${unconfirmed[0].id}`} onClick={() => jumpTo(`card-${unconfirmed[0].id}`)}
+            className="flex min-h-12 w-full items-center justify-center gap-1 text-sm font-semibold underline underline-offset-4">
+            Confirm the suggested times on {pending} medicine{pending > 1 ? "s" : ""} ↑
+          </button>
+        ) : null}
         <label className="flex min-h-12 items-center gap-3 font-semibold">
           <input type="checkbox" checked={state.compared} onChange={(e) => onChange(setCompared(state, e.target.checked))}
-            className="h-6 w-6 accent-[var(--color-ink)]" />
+            className="h-6 w-6 shrink-0 accent-[var(--color-ink)]" />
           I compared this with the paper
         </label>
         <button type="button" disabled={!ready} onClick={onMakePlan}
-          className="min-h-14 w-full rounded-full bg-turmeric text-lg font-semibold text-ink disabled:bg-muted/20 disabled:text-muted">
+          className="mt-1 min-h-12 w-full rounded-full bg-turmeric text-lg font-semibold text-ink disabled:bg-muted/20 disabled:text-muted">
           Looks right, make the plan
         </button>
-        {!ready && (
-          <p className="text-center text-sm text-muted" aria-live="polite">
-            {pending > 0 ? `Confirm the suggested times on ${pending} medicine${pending > 1 ? "s" : ""}` : "Tick the box after comparing with the paper"}
-          </p>
-        )}
       </div>
     </div>
   );

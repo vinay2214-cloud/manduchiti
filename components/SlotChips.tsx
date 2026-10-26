@@ -1,5 +1,6 @@
 import type { ConfirmRow, Slot } from "@/lib/types";
 import { SLOT_ORDER } from "@/lib/scheduler";
+import { confirmLabel } from "@/lib/confirm";
 import { CheckIcon, CloudSunIcon, MoonIcon, SunIcon, SunsetIcon } from "./Icons";
 
 export const SLOT_META: Record<Slot, { en: string; color: string; Icon: typeof SunIcon }> = {
@@ -31,11 +32,15 @@ export default function SlotChips({ row, onToggle, onConfirm }: Props) {
         })}
       </div>
       {suggested && (
-        <button type="button" onClick={onConfirm} disabled={row.confirmed} aria-pressed={row.confirmed}
-          className={`mt-3 flex min-h-12 items-center gap-2 rounded-full px-4 text-sm font-semibold text-ink ${
-            row.confirmed ? "bg-card ring-2 ring-ink" : "bg-amber-bg ring-2 ring-turmeric"}`}>
-          {row.confirmed ? (<><CheckIcon className="h-5 w-5" label="Confirmed" /> Times confirmed by you</>) : "Suggested, please confirm"}
+        <button type="button" onClick={onConfirm} disabled={row.confirmed} aria-pressed={row.confirmed} data-confirm={row.id}
+          className={`mt-3 flex min-h-12 w-full items-center gap-2 rounded-[var(--radius-input)] px-4 text-left font-semibold text-ink ${
+            row.confirmed ? "bg-card ring-2 ring-ink" : "bg-turmeric shadow-[var(--shadow-soft)] active:translate-y-px"}`}>
+          {row.confirmed ? <CheckIcon className="h-5 w-5 shrink-0" label="Confirmed" /> : <span aria-hidden className="text-lg">☐</span>}
+          <span>{confirmLabel(row)}</span>
         </button>
+      )}
+      {suggested && !row.confirmed && (
+        <p className="mt-1.5 text-sm text-muted">The sheet only says how many times a day. These times are a suggestion.</p>
       )}
     </div>
   );
