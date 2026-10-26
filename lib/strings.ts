@@ -1,6 +1,7 @@
 // Fixed UI text. Never generated at runtime.
 // Caregiver screens (upload, check, errors) are English. The patient plan uses `plan` in Telugu and English.
-// TELUGU REVIEW STATUS: pending — AI-drafted table shown to the learner; awaiting their confirmed corrections.
+// TELUGU REVIEW STATUS: draft, review pending (not reviewed). AI-drafted; the learner accepted rows 1–27 with no
+// changes for now and will do the final review on the real screen before recording. Corrections are edits here.
 
 export const en = {
   uploadTitle: "Make your mother's medicine plan",

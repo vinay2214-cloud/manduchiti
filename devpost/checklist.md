@@ -62,7 +62,7 @@ Build mode: fast
 ## Hands-on Checkpoints
 
 - [ ] Early usable behavior explored — after slice 2 (check-with-paper screen), before the plan screen is built
-- [ ] Telugu wording and live URL reviewed — after slice 3
+- [ ] Telugu wording and live URL reviewed — after slice 3 (`lib/strings.ts` is **draft, review pending (not reviewed)**: learner accepted the table with no changes for now; final review on the real screen before recording)
 - [ ] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
