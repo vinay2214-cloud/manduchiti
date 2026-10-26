@@ -49,6 +49,16 @@ Build mode: fast
   Learner check: Upload any non-medical photo from your gallery and confirm the friendly message; skim the README.
   Commit: `Error states, README and license`
 
+- [x] **4b. Opening hero on the Upload screen (learner-requested addition, time-boxed ~30 min)**
+  Becomes usable: The Upload screen opens with a fictional, clearly stamped SAMPLE discharge sheet that animates into the four Telugu time-of-day cards, with a CSS 3D tilt on pointer/touch drag.
+  Why now: Requested by the learner after slice 4's offline work, before the live checks and recording; it shows the kernel (English sheet → Telugu day plan) in the first second.
+  PRD ref: `prd.md > Look and Feel`, `prd.md > Screens and Layout` (Upload)
+  Spec ref: `spec.md > Look and Feel` (tokens, motion, reduced motion, contrast), `spec.md > Upload Screen`
+  Build: `components/Hero.tsx` (inline SVG sheet, four cards from `SLOT_META` and `lib/strings.ts`), `.hero*` CSS keyframes in `app/globals.css` whose resting styles are the final frame; no WebGL, 3D libraries, external images or new fonts; `touch-action: pan-y` so vertical scroll still works.
+  Verify (mechanical): `npm test` + `npm run build` clean; headless Chrome at 390×844 (motion and reduced motion): "Take a photo" fully visible without scrolling, title above the fold, no horizontal overflow, cards inside the hero, animation runs only with motion allowed, drag tilts only with motion allowed; contrast of every hero text pair ≥ 4.5:1; first-load transfer measured before and after deploy.
+  Learner check: Open the live URL on your phone, watch the opening once, drag across it sideways, then turn on Reduce Motion and reload — it should be still.
+  Commit: `Opening hero on the Upload screen`
+
 - [ ] **5. (Stretch) Save as image, WhatsApp, print**
   Becomes usable: From the plan, download a 1080×1350 PNG with the footer, open a WhatsApp share link, or print a clean black-on-white page.
   Why now: Explicitly not part of "done" — last so it can be dropped if the deadline bites.

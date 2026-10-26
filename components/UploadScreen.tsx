@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { en, SAMPLES } from "@/lib/strings";
 import { CameraIcon, ImageIcon, LockIcon } from "./Icons";
+import Hero from "./Hero";
 
 type Props = { onImage: (blob: Blob) => void };
 
@@ -25,13 +26,14 @@ export default function UploadScreen({ onImage }: Props) {
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <main className="flex-1 px-4 pt-10 pb-6">
+      <main className="flex-1 px-4 pt-5 pb-6">
         <p className="text-sm font-semibold tracking-wide text-muted uppercase">Mandu Chit · మందు చీటీ</p>
-        <h1 className="mt-2 text-[1.875rem] leading-tight font-bold">{en.uploadTitle}</h1>
-        <p className="mt-3 text-muted">{en.uploadSubtitle}</p>
+        <div className="mt-3"><Hero /></div>
+        <h1 className="mt-5 text-[1.75rem] leading-tight font-bold">{en.uploadTitle}</h1>
+        <p className="mt-2 text-muted">{en.uploadSubtitle}</p>
 
         <button type="button" onClick={() => setShowSamples((s) => !s)}
-          className="mt-8 min-h-12 font-semibold underline underline-offset-4" aria-expanded={showSamples}>
+          className="mt-4 min-h-12 font-semibold underline underline-offset-4" aria-expanded={showSamples}>
           {en.trySample}
         </button>
         {showSamples && (

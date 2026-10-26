@@ -79,3 +79,66 @@ body {
 .med-name { font-size: 1.375rem; }    /* 22px × scale */
 .section-h { font-size: 1.625rem; }   /* 26px × scale */
 .page-title { font-size: 1.875rem; }  /* 30px × scale */
+
+/* Upload hero: the resting styles are the final frame; keyframes only animate into it. */
+.hero {
+  position: relative;
+  height: 196px;
+  perspective: 900px;
+  touch-action: pan-y; /* horizontal drag tilts, vertical drag still scrolls the page */
+  user-select: none;
+}
+.hero-stage {
+  --rx: 0deg;
+  --ry: 0deg;
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 180ms ease-out;
+}
+.hero-sheet {
+  position: absolute;
+  left: 0;
+  top: 14px;
+  width: 34%;
+  height: 168px;
+  transform: rotate(-6deg) translateZ(0);
+  filter: drop-shadow(0 4px 16px rgba(18, 67, 62, 0.12));
+  animation: hero-sheet 900ms cubic-bezier(0.2, 0.7, 0.2, 1) 250ms both;
+}
+.hero-card {
+  position: absolute;
+  width: 28.5%;
+  height: 84px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 8px;
+  border-radius: 12px;
+  border-top: 5px solid var(--slot);
+  background: color-mix(in srgb, var(--slot) 22%, white);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-soft);
+  transform: translateZ(12px);
+  animation: hero-card 650ms cubic-bezier(0.2, 0.8, 0.2, 1.1) calc(950ms + var(--i) * 120ms) both;
+}
+.hero-card:nth-of-type(2) { left: 38.5%; top: 8px; }
+.hero-card:nth-of-type(3) { left: 70%; top: 8px; }
+.hero-card:nth-of-type(4) { left: 38.5%; top: 104px; }
+.hero-card:nth-of-type(5) { left: 70%; top: 104px; }
+
+@keyframes hero-sheet {
+  from { transform: translateX(97%) scale(1.12) rotate(-12deg) rotateX(22deg); }
+  to { transform: rotate(-6deg) translateZ(0); }
+}
+@keyframes hero-card {
+  from { opacity: 0; transform: translate(var(--fx), var(--fy)) scale(0.3) translateZ(0); }
+  to { opacity: 1; transform: translateZ(12px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-sheet, .hero-card { animation: none; }
+  .hero-stage { transition: none; transform: none; }
+}
