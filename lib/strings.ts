@@ -71,6 +71,9 @@ export const plan = {
   langTe: { te: "తెలుగు", en: "తెలుగు" },
   langEn: { te: "English", en: "English" },
   textSize: { te: "అక్షరాల పరిమాణం", en: "Text size" },
+  // Rows 29–30: added for slice 5, draft, not yet in the learner's review table.
+  shareWhatsApp: { te: "WhatsApp లో పంపండి", en: "Share on WhatsApp" },
+  print: { te: "ప్రింట్ చేయండి", en: "Print" },
 } satisfies Record<string, Bilingual>;
 
 export type PlanKey = keyof typeof plan;

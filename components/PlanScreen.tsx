@@ -9,6 +9,7 @@ import SlotCard from "./SlotCard";
 import WarningPanel from "./WarningPanel";
 import PlanRowView from "./PlanRowView";
 import T, { Bi } from "./T";
+import ShareBar from "./ShareBar";
 
 type Props = { plan: Plan; onBack: () => void; onStartOver: () => void };
 
@@ -20,12 +21,12 @@ export default function PlanScreen({ plan, onBack, onStartOver }: Props) {
 
   return (
     <div data-lang={lang} lang={lang} className="flex min-h-dvh flex-col">
-      <div className="flex items-center justify-between gap-2 px-4 pt-4 text-sm">
+      <div data-print-hide className="flex items-center justify-between gap-2 px-4 pt-4 text-sm">
         <button type="button" onClick={onBack} className="min-h-12 font-semibold text-muted underline underline-offset-4">Back to checking</button>
         <button type="button" onClick={onStartOver} className="min-h-12 font-semibold text-muted underline underline-offset-4">Start over</button>
       </div>
       <header className="px-4 pt-2">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div data-print-hide className="flex flex-wrap items-center justify-between gap-3">
           <TextSizeToggle />
           <LanguageToggle lang={lang} onChange={setLang} />
         </div>
@@ -64,6 +65,8 @@ export default function PlanScreen({ plan, onBack, onStartOver }: Props) {
             </p>
           )}
         </section>
+
+        <ShareBar plan={plan} lang={lang} />
 
         {(plan.showSuggestedLegend || plan.showMovedLegend) && (
           <section className="space-y-2 text-base">
