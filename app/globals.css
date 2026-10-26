@@ -149,7 +149,8 @@ body {
   margin: 10mm;
 }
 @media print {
-  :root { --scale: 0.68 !important; }
+  /* Full screen size on paper: names 22px, Telugu body 20px. */
+  :root { --scale: 1 !important; }
   body { background: #fff !important; color: #000 !important; }
   [data-print-hide], nextjs-portal { display: none !important; }
   * {
@@ -164,7 +165,7 @@ body {
   section h2 { border-top-color: #000 !important; }
   .sticky { position: static !important; border-top: 2px solid #000 !important; }
   .mx-auto { max-width: none !important; }
-  /* Two columns of cards so a full day's plan fits on one A4 page. */
+  /* Two columns of cards; dense sheets run to a second page rather than shrinking the type. */
   main { padding: 8px 0 0 !important; columns: 2; column-gap: 6mm; }
   main > * { margin: 0 0 3mm !important; break-inside: avoid; }
   main section h2 { padding-top: 4px !important; padding-bottom: 4px !important; }

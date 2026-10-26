@@ -132,7 +132,7 @@ Frequencies are sorted into four kinds:
 
 ### Share (stretch, not part of "done")
 - Save as image (1080×1350, same design, readable at thumbnail size, includes the safety footer), Share on WhatsApp, Print.
-- The print stylesheet is black on white, one page, no buttons. *(Amended in 5-build: two readable pages are allowed for dense sheets; see Amendments From 5-build.)*
+- The print stylesheet is black on white, one page, no buttons. *(Amended in 5-build: print uses the full screen type size, so plans run to two or three pages; see Amendments From 5-build.)*
 
 ## States and Boundaries
 - **Blurry or dark photo:** a friendly message with one retake tip. No stack traces ever.
@@ -209,4 +209,4 @@ Learner decisions made at the slice 2 checkpoint of `5-build`, after seeing the 
   - A frequency that is itself a time ("HS", "At bedtime", "8 PM") + an instruction naming a **different** time ("HS" + "Morning") → Ask, with "Times on the sheet don't match". The same time ("HS" + "Night") → direct.
   - Count or digit pattern + named time is unchanged: matching → direct, disagreeing → Ask.
 - **Instruction edits re-schedule too.** On the Check with paper screen, editing a row's instructions re-runs Slot Mapping just like a frequency edit, so timing written in the instructions can't leave a stale slot. Rows whose sheet-derived status is Ask still stay in Ask after any edit.
-- **Print length (slice 5).** The print stays black on white with no buttons, and keeps large, readable type. A dense sheet may print on **two pages** rather than shrinking the text to fit one (sample 4, with 7 medicines across all four times, prints on two). Cards are never split across a page break. *Save as image* was dropped from the POC: it couldn't be proven reliable on a phone by the slice 5 cutoff.
+- **Print length (slice 5).** The print stays black on white with no buttons, and keeps large, readable type. A dense sheet may print on more than one page rather than shrinking the text to fit. *Revised after the phone test:* the learner chose full screen size on paper (medicine names 22px, Telugu body 20px), so samples 1–3 print on 2 pages and sample 4 (7 medicines across all four times) on 3. Cards are never split across a page break. *Save as image* was dropped from the POC: it couldn't be proven reliable on a phone by the slice 5 cutoff.
