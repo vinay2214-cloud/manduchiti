@@ -7,6 +7,9 @@ import type { ErrorCode, Extraction } from "@/lib/types";
 export const maxDuration = 60;
 
 const MAX_BYTES = 4 * 1024 * 1024;
+// The SDK retries 503s with backoff on its own; this caps the whole call so a slow
+// model ends as a friendly "busy" before the browser (45s) or Vercel (60s) gives up.
+const MODEL_BUDGET_MS = 40_000;
 
 function fail(error: ErrorCode, status: number) {
   return Response.json({ error }, { status });
@@ -31,12 +34,18 @@ export async function POST(request: Request) {
     const res = await gemini().models.generateContent({
       model: geminiModel(),
       contents: [{ role: "user", parts: [{ inlineData: { mimeType: file.type, data } }, { text: EXTRACT_PROMPT }] }],
-      config: { responseMimeType: "application/json", responseJsonSchema: extractionJsonSchema, temperature: 0 },
+      config: {
+        responseMimeType: "application/json",
+        responseJsonSchema: extractionJsonSchema,
+        temperature: 0,
+        abortSignal: AbortSignal.timeout(MODEL_BUDGET_MS),
+      },
     });
     text = res.text;
   } catch (err) {
     // Log the failure kind only — never the image or document text.
-    console.error("extract: model call failed", isBusyError(err) ? "busy" : "error");
+    const status = (err as { status?: number }).status ?? (err instanceof Error ? err.name : "unknown");
+    console.error("extract: model call failed", status);
     return fail(isBusyError(err) ? "busy" : "invalid", isBusyError(err) ? 503 : 502);
   }
 

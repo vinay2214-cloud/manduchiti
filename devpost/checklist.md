@@ -9,7 +9,7 @@ Build mode: fast
 
 ## Slices
 
-- [ ] **1. A sample sheet goes in and the extracted medicines come back, checked by code**
+- [x] **1. A sample sheet goes in and the extracted medicines come back, checked by code**
   Becomes usable: A running Next.js app where you pick a camera/gallery photo or "Try a sample sheet" and see the Reading steps, then the validated `Extraction` JSON (medicines, warning signs, follow-up), with ungrounded doses forced to `unsure`.
   Why now: Gemini vision + structured output is the biggest unknown and the kernel's first half. If extraction of the samples is shaky, every later slice changes — find out first. Bootstrapping lives here.
   PRD ref: `prd.md > The Core Journey` (steps 1–2), `prd.md > Image Upload`, `prd.md > Extraction`, `prd.md > The Safety Rule`
@@ -86,3 +86,5 @@ Activity mode: [pending]
 - Default Gemini model changed from `gemini-2.5-flash` to `gemini-3.5-flash` (still overridable with `GEMINI_MODEL`) — the API returned 404 "no longer available to new users" for 2.5; 3.7/3.8-flash returned 503 high demand and `gemini-flash-latest` took ~575s, while 3.5-flash answered in ~9–15s.
 - Privacy line set to "Mandu Chit doesn't store your photo. This demo is for sample sheets only, please don't upload real patient papers." — the Gemini free-tier terms say submitted content is used to improve Google products and may be read by human reviewers.
 - Vercel Hobby limits verified: 4.5 MB request body, 300s max duration, so `maxDuration = 60` stands. Free-tier Gemini returned 503 on roughly 1 in 3 extraction calls during local testing (mapped to `busy`); whether to add a server retry is open for the slice 2 checkpoint.
+- Extraction's model call is capped at 40s via `abortSignal`, and abort/timeout map to `busy` — the smoke deploy hit Vercel's 60s FUNCTION_INVOCATION_TIMEOUT (raw 504) because `@google/genai` retries 503s up to 5 times with backoff by default, so the spec's "zero retries for extraction" was never literally true; the SDK retries now run inside the 40s budget. Live smoke test after the fix: 2 of 5 calls succeeded (~13s), the rest were clean `busy`.
+- Free-tier quota is 20 generate requests per day per model (429 RESOURCE_EXHAUSTED, `generate_content_free_tier_requests`, limit 20) — exhausted for the default model on build day by testing; resets after the deadline. Lite models still had quota. How to proceed is a learner decision (billing vs model change).

@@ -14,6 +14,7 @@ export const geminiModel = () => process.env.GEMINI_MODEL || "gemini-3.5-flash";
 
 // 429s and timeouts become the friendly "busy" state.
 export function isBusyError(err: unknown): boolean {
+  if (err instanceof Error && (err.name === "AbortError" || err.name === "TimeoutError")) return true;
   const msg = err instanceof Error ? err.message : String(err);
-  return /\b429\b|RESOURCE_EXHAUSTED|\b503\b|UNAVAILABLE|DEADLINE|timed? ?out/i.test(msg);
+  return /\b429\b|RESOURCE_EXHAUSTED|\b503\b|UNAVAILABLE|DEADLINE|timed? ?out|abort/i.test(msg);
 }
