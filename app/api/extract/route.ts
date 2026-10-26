@@ -2,14 +2,21 @@ import { errorStatus, gemini, geminiModel, isBusyError } from "@/lib/gemini";
 import { EXTRACT_PROMPT } from "@/lib/prompts";
 import { ModelExtractionSchema, extractionJsonSchema } from "@/lib/schemas";
 import { groundDoses } from "@/lib/groundDose";
+import { sleep } from "@/lib/sleep";
 import type { ErrorCode, Extraction } from "@/lib/types";
 
 export const maxDuration = 60;
 
 const MAX_BYTES = 4 * 1024 * 1024;
-// The SDK retries 503s with backoff on its own; this caps the whole call so a slow
-// model ends as a friendly "busy" before the browser (45s) or Vercel (60s) gives up.
+// One time budget for both attempts, so a slow model ends as a friendly "busy"
+// before the browser (45s) or Vercel (60s) gives up.
 const MODEL_BUDGET_MS = 40_000;
+// One explicit retry, only on 503 (overloaded) or 429 (rate limited), after a short pause.
+// Timeouts aren't retried: the budget is already spent. Bad replies aren't retried: the user's own retry is clearer.
+const RETRY_DELAY_MS = 2_000;
+const MAX_ATTEMPTS = 2;
+
+const isRetryable = (err: unknown) => [429, 503].includes((err as { status?: number }).status ?? 0);
 
 function fail(error: ErrorCode, status: number) {
   return Response.json({ error }, { status });
@@ -29,26 +36,32 @@ export async function POST(request: Request) {
 
   const data = Buffer.from(await file.arrayBuffer()).toString("base64");
 
+  const budget = AbortSignal.timeout(MODEL_BUDGET_MS);
   let text: string | undefined;
-  const attempt = 1; // no automatic retries; see lib/gemini.ts
-  // Log only the attempt number and outcome — never the image or document text.
-  console.info("extract: gemini attempt", attempt);
-  try {
-    const res = await gemini().models.generateContent({
-      model: geminiModel(),
-      contents: [{ role: "user", parts: [{ inlineData: { mimeType: file.type, data } }, { text: EXTRACT_PROMPT }] }],
-      config: {
-        responseMimeType: "application/json",
-        responseJsonSchema: extractionJsonSchema,
-        temperature: 0,
-        abortSignal: AbortSignal.timeout(MODEL_BUDGET_MS),
-      },
-    });
-    text = res.text;
-  } catch (err) {
-    // Log the failure kind only — never the image or document text.
-    console.error("extract: gemini attempt", attempt, "failed", errorStatus(err));
-    return fail(isBusyError(err) ? "busy" : "invalid", isBusyError(err) ? 503 : 502);
+  for (let attempt = 1; ; attempt++) {
+    // Log only the attempt number and outcome — never the image or document text.
+    console.info("extract: gemini attempt", attempt);
+    try {
+      const res = await gemini().models.generateContent({
+        model: geminiModel(),
+        contents: [{ role: "user", parts: [{ inlineData: { mimeType: file.type, data } }, { text: EXTRACT_PROMPT }] }],
+        config: {
+          responseMimeType: "application/json",
+          responseJsonSchema: extractionJsonSchema,
+          temperature: 0,
+          abortSignal: budget,
+        },
+      });
+      text = res.text;
+      break;
+    } catch (err) {
+      console.error("extract: gemini attempt", attempt, "failed", errorStatus(err));
+      if (attempt < MAX_ATTEMPTS && isRetryable(err) && !budget.aborted) {
+        await sleep(RETRY_DELAY_MS);
+        continue;
+      }
+      return fail(isBusyError(err) ? "busy" : "invalid", isBusyError(err) ? 503 : 502);
+    }
   }
 
   let json: unknown;

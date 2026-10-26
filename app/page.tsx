@@ -1,65 +1,106 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UploadScreen from "@/components/UploadScreen";
 import ReadingScreen from "@/components/ReadingScreen";
-import { resizeImage } from "@/lib/resizeImage";
 import ConfirmScreen from "@/components/ConfirmScreen";
+import PlanScreen from "@/components/PlanScreen";
+import ErrorState from "@/components/ErrorState";
+import { applyStoredScale } from "@/components/TextSizeToggle";
 import { buildConfirmState } from "@/lib/confirm";
+import { toErrorCode } from "@/lib/errors";
+import { buildPlan, translationItems } from "@/lib/plan";
+import { resizeImage } from "@/lib/resizeImage";
 import { en } from "@/lib/strings";
-import type { ConfirmState, ErrorCode, Extraction } from "@/lib/types";
+import type { ConfirmState, ErrorCode, Extraction, Plan, Translations } from "@/lib/types";
 
-type Step = "upload" | "reading" | "confirm" | "plan" | "error";
+type Step = "upload" | "reading" | "confirm" | "preparing" | "plan" | "error";
+type Failure = { code: ErrorCode; during: "extract" | "plan" };
+
+async function postJson(url: string, init: RequestInit) {
+  const res = await fetch(url, { ...init, signal: AbortSignal.timeout(45_000) });
+  let json: Record<string, unknown> = {};
+  try {
+    json = await res.json();
+  } catch {
+    // A non-JSON reply (e.g. a platform error page) is treated as "invalid".
+  }
+  if (!res.ok) throw Object.assign(new Error("request failed"), { code: json.error });
+  return json;
+}
 
 export default function Home() {
   const [step, setStep] = useState<Step>("upload");
   const [readingDone, setReadingDone] = useState(0);
+  const [photo, setPhoto] = useState<Blob | null>(null); // kept in memory only, so "Try again" can reuse it
   const [confirm, setConfirm] = useState<ConfirmState | null>(null);
-  const [error, setError] = useState<ErrorCode | null>(null);
+  const [plan, setPlan] = useState<Plan | null>(null);
+  const [failure, setFailure] = useState<Failure | null>(null);
 
-  async function handleImage(blob: Blob) {
+  useEffect(applyStoredScale, []);
+
+  async function extract(blob: Blob) {
+    setPhoto(blob);
     setStep("reading");
     setReadingDone(0);
     try {
       const small = await resizeImage(blob);
       const body = new FormData();
       body.append("image", small, "sheet.jpg");
-      const req = fetch("/api/extract", { method: "POST", body, signal: AbortSignal.timeout(45_000) });
+      const req = postJson("/api/extract", { method: "POST", body });
       setReadingDone(1);
-      const res = await req;
-      const json = await res.json();
-      if (!res.ok) throw Object.assign(new Error("extract"), { code: json.error as ErrorCode });
+      const json = await req;
       setReadingDone(2);
-      setConfirm(buildConfirmState(json as Extraction));
+      setConfirm(buildConfirmState(json as unknown as Extraction));
       setStep("confirm");
     } catch (e) {
-      const code = (e as { code?: ErrorCode }).code ?? ((e as Error).name === "TimeoutError" ? "busy" : "invalid");
-      setError(code);
+      setFailure({ code: toErrorCode(e), during: "extract" });
       setStep("error");
     }
   }
 
-  const reset = () => { setStep("upload"); setConfirm(null); setError(null); };
+  async function makePlan(state: ConfirmState) {
+    setStep("preparing");
+    try {
+      const items = translationItems(state);
+      const translations = items.length
+        ? ((await postJson("/api/telugu", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ items }) }))
+            .translations as Translations)
+        : {};
+      setPlan(buildPlan(state, translations));
+      setStep("plan");
+      window.scrollTo(0, 0);
+    } catch (e) {
+      setFailure({ code: toErrorCode(e), during: "plan" });
+      setStep("error");
+    }
+  }
+
+  const reset = () => {
+    setStep("upload");
+    setPhoto(null);
+    setConfirm(null);
+    setPlan(null);
+    setFailure(null);
+  };
 
   return (
     <div className="mx-auto max-w-[480px]">
-      {step === "upload" && <UploadScreen onImage={handleImage} />}
-      {step === "reading" && <ReadingScreen done={readingDone} />}
-      {step === "error" && (
-        <main className="px-4 pt-10">
-          <p className="text-lg font-semibold">Something went wrong: {error}</p>
-          <button type="button" onClick={reset} className="mt-6 min-h-12 rounded-full bg-turmeric px-6 font-semibold text-ink">{en.startOver}</button>
-        </main>
-      )}
+      {step === "upload" && <UploadScreen onImage={extract} />}
+      {step === "reading" && <ReadingScreen steps={en.readingSteps} done={readingDone} />}
       {step === "confirm" && confirm && (
-        <ConfirmScreen state={confirm} onChange={setConfirm} onMakePlan={() => setStep("plan")} onStartOver={reset} />
+        <ConfirmScreen state={confirm} onChange={setConfirm} onMakePlan={() => makePlan(confirm)} onStartOver={reset} />
       )}
-      {step === "plan" && (
-        // Temporary until slice 3 builds the Telugu plan.
-        <main className="px-4 pt-10">
-          <p className="text-lg font-semibold">The Telugu plan arrives in the next step of the build.</p>
-          <button type="button" onClick={() => setStep("confirm")} className="mt-6 min-h-12 font-semibold underline">Back to checking</button>
-        </main>
+      {step === "preparing" && <ReadingScreen steps={en.preparingSteps} done={1} />}
+      {step === "plan" && plan && <PlanScreen plan={plan} onBack={() => setStep("confirm")} onStartOver={reset} />}
+      {step === "error" && failure && (
+        <ErrorState
+          code={failure.code}
+          onRetry={failure.during === "plan" ? (confirm ? () => makePlan(confirm) : null) : photo ? () => extract(photo) : null}
+          onRetake={reset}
+          onStartOver={reset}
+          onBack={failure.during === "plan" ? () => setStep("confirm") : undefined}
+        />
       )}
     </div>
   );

@@ -106,7 +106,7 @@ PRD ref: `prd.md > Image Upload`.
 `components/ReadingScreen.tsx`. A three-step list with ticks and a skeleton shimmer, never a bare spinner.
 - "Reading the sheet" ticks when the upload completes.
 - "Finding medicines" ticks when `/api/extract` returns.
-- "Preparing the Telugu plan" runs during the `/api/telugu` call after confirm. That call needs the confirmed text, so this step is shown again as the transition into the plan.
+- *(Amended in 5-build:)* the third pre-confirm step is "Getting the check screen ready". "Preparing the Telugu plan" appears only after confirm, during the `/api/telugu` call. That call needs the confirmed text, so this step is shown again as the transition into the plan.
 
 PRD ref: `prd.md > Screens and Layout`.
 
@@ -239,7 +239,7 @@ PRD ref: `prd.md > Telugu Plan`, `prd.md > Screens and Layout`.
 |---|---|
 | `blurry` | One retake tip |
 | `not_document` / `no_medicines` | Plain message and retry |
-| `busy` (429 or timeout) | "Busy right now, please try again in a minute" |
+| `busy` (429, 503 or timeout) | "Busy right now, please try again in a minute", with **Try again** (reuses the photo still in browser memory, or the confirmed list for a plan error) and a smaller **Start over**. Raw codes are never shown. *(5-build)* |
 | `invalid` (schema or guard failure) | Retry |
 
 PRD ref: `prd.md > States and Boundaries`.
@@ -444,7 +444,7 @@ Implements `prd.md > Image Upload`, using the learner's decision.
 ## What Was Simplified and Why
 - **React state in one page** instead of routes or a store. One flow, nothing persisted. Multiple routes would need state passed or persisted between pages.
 - **Reading step 3 runs after confirm.** The translation needs the confirmed text. Translating twice (before and after edits) would double the calls and complexity.
-- **One retry for translation, zero for extraction.** Extraction is the slow call, so the user's own retry is clearer.
+- **One retry for translation, zero for extraction.** Extraction is the slow call, so the user's own retry is clearer. *(Amended in 5-build, learner decision: extraction gets one explicit retry on a Gemini 503/429 only, after 2s, inside the same 40s budget; timeouts and bad replies are still not retried. The SDK's own automatic retries are off, so each attempt is one Gemini call.)*
 - **Samples go through the real extraction path.** Nothing is faked, and the kernel is real in the demo.
 - **Share and Print are a stretch,** last in the slice order.
 

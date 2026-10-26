@@ -1,12 +1,11 @@
-import { en } from "@/lib/strings";
 import { CheckIcon } from "./Icons";
 
-// done = how many of the three steps have finished; the next one is in progress.
-export default function ReadingScreen({ done }: { done: number }) {
+// done = how many steps have finished; the next one is in progress.
+export default function ReadingScreen({ steps, done }: { steps: string[]; done: number }) {
   return (
     <main className="px-4 pt-10" aria-live="polite">
       <ol className="space-y-4">
-        {en.readingSteps.map((label, i) => {
+        {steps.map((label, i) => {
           const state = i < done ? "done" : i === done ? "active" : "waiting";
           return (
             <li key={label} className="flex items-center gap-3 text-lg">
